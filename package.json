@@ -19,7 +19,8 @@
     "url": "https://github.com/EricTurf/index-wizard/issues"
   },
   "homepage": "https://github.com/EricTurf/index-wizard#readme",
-  "devDependencies": {
+  "devDependencies": {},
+  "dependencies": {
     "prettier": "^1.14.3"
   }
 }
