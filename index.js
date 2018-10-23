@@ -52,7 +52,11 @@ const getPretierConfig = () => {
 
 const writeIndexFiles = (directoryContent, r) => {
   directoryContent.forEach(content => {
-    if (content === '__tests__') return;
+    if (
+      content === '__tests__' ||
+      (r && content.split('/').pop() === '__tests__')
+    )
+      return;
     const fullPath = getFullPath(content);
 
     const isDir = fs.lstatSync(fullPath).isDirectory();
@@ -62,21 +66,29 @@ const writeIndexFiles = (directoryContent, r) => {
       const dirContent = readDir(fullPath);
 
       if (dirContent.includes('index.js')) return;
-
-      writeFile(
-        indexFilePath,
-        getIndexContent(r === true ? content.split('/').pop() : content)
-      );
-      const formattedContent = prettier.format(
-        readFile(indexFilePath, 'utf-8'),
-        Object.assign({}, getPretierConfig(), { parser: 'babylon' })
-      );
-      writeFile(indexFilePath, formattedContent);
+      if (
+        !dirContent.every(c =>
+          fs.lstatSync(path.join(fullPath, c)).isDirectory()
+        )
+      ) {
+        writeFile(
+          indexFilePath,
+          getIndexContent(r === true ? content.split('/').pop() : content)
+        );
+        const formattedContent = prettier.format(
+          readFile(indexFilePath, 'utf-8'),
+          Object.assign({}, getPretierConfig(), { parser: 'babylon' })
+        );
+        writeFile(indexFilePath, formattedContent);
+      }
 
       if (
         dirContent.some(c => fs.lstatSync(path.join(fullPath, c)).isDirectory())
-      )
-        writeIndexFiles([`${content}/${dirContent[0]}`], true);
+      ) {
+        dirContent.forEach(c => {
+          writeIndexFiles([`${content}/${c}`], true);
+        });
+      }
     }
   });
 };
