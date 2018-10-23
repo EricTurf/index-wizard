@@ -3,11 +3,11 @@
   "bin": {
     "wizzy": "./index.js"
   },
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Creates index files",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node index.js --d=./test-directory"
   },
   "repository": {
     "type": "git",

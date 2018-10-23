@@ -25,7 +25,7 @@ if (!input) {
   console.error('You must give a directory by using the --d= flag');
   process.exit();
 }
-const startingDir = input.split('=').pop();
+const startingDir = path.join(process.cwd(), input.split('=').pop());
 
 const directories = readDir(startingDir);
 
@@ -50,8 +50,9 @@ const getPretierConfig = () => {
   }
 };
 
-const writeIndexFiles = directoryContent => {
+const writeIndexFiles = (directoryContent, r) => {
   directoryContent.forEach(content => {
+    if (content === '__tests__') return;
     const fullPath = getFullPath(content);
 
     const isDir = fs.lstatSync(fullPath).isDirectory();
@@ -59,18 +60,23 @@ const writeIndexFiles = directoryContent => {
     if (isDir) {
       const indexFilePath = path.join(fullPath, 'index.js');
       const dirContent = readDir(fullPath);
-      if (dirContent.includes('index.js')) return;
-      if (
-        dirContent.some(c => fs.lstatSync(path.join(fullPath, c)).isDirectory())
-      )
-        return writeIndexFiles(dirContent);
 
-      writeFile(indexFilePath, getIndexContent(dir));
+      if (dirContent.includes('index.js')) return;
+
+      writeFile(
+        indexFilePath,
+        getIndexContent(r === true ? content.split('/').pop() : content)
+      );
       const formattedContent = prettier.format(
         readFile(indexFilePath, 'utf-8'),
         Object.assign({}, getPretierConfig(), { parser: 'babylon' })
       );
       writeFile(indexFilePath, formattedContent);
+
+      if (
+        dirContent.some(c => fs.lstatSync(path.join(fullPath, c)).isDirectory())
+      )
+        writeIndexFiles([`${content}/${dirContent[0]}`], true);
     }
   });
 };
