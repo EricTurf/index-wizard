@@ -1,5 +1,8 @@
 {
   "name": "index-wizard",
+  "bin": {
+    "wizzy": "./index.js"
+  },
   "version": "1.0.0",
   "description": "Creates index files",
   "main": "index.js",
@@ -15,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/EricTurf/index-wizard/issues"
   },
-  "homepage": "https://github.com/EricTurf/index-wizard#readme"
+  "homepage": "https://github.com/EricTurf/index-wizard#readme",
+  "devDependencies": {
+    "prettier": "^1.14.3"
+  }
 }
